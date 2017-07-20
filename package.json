@@ -1,0 +1,34 @@
+{
+  "name": "stylex",
+  "version": "1.0.0",
+  "description": "Reactive CSS library. Globally configure \"virtual CSS variables\" and update styles in real time.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jordanranson/stylex.git"
+  },
+  "keywords": [
+    "style",
+    "css",
+    "reactive",
+    "vue",
+    "react",
+    "angular",
+    "stylesheet",
+    "javascript",
+    "js",
+    "web",
+    "webdev",
+    "frontend",
+    "front-end"
+  ],
+  "author": "Jordan Ranson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jordanranson/stylex/issues"
+  },
+  "homepage": "https://github.com/jordanranson/stylex#readme"
+}
