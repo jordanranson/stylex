@@ -1,10 +1,9 @@
 # stylex
 Reactive CSS library. Globally configure "virtual CSS variables" and update styles in real time.
 
+### Example Usage
 ```js
-/*
- * Example usage
- */
+// JavaScript
  
 import Stylex from 'stylex'
 
@@ -28,6 +27,8 @@ setInterval(() => {
 ```
 
 ```html
+<!-- HTML -->
+
 <style>
 .my-button {
   padding: 10px 16px;
