@@ -6,6 +6,54 @@ Reactive CSS library. Globally configure "virtual CSS variables" and update styl
 npm install stylex-lib
 ```
 
+## API Reference
+```js
+// Sets or updates a variable class
+set(key, prop, value, [done])
+
+/* Arguments
+ * key - Name of the variable/css class.
+ * prop - Name of the css property. Can be hyphenated or camel cased.
+ * value - The value to set the property to.
+ * done - (optional) Callback to be executed after update has been applied.
+ */
+
+
+// Sets or updates a variable class
+set(key, props, [done])
+
+/* Arguments
+ * key - Name of the variable/css class.
+ * props - JS object with key/value pairs of properties and values. Keys can be hyphenated or camel cased.
+ * done - (optional) Callback to be executed after update has been applied.
+ */
+
+
+// Returns the (cached) style object for the specified variable
+get(key)
+
+/* Arguments
+ * key - Name of the variable/css class.
+ */
+
+
+// Returns the (cached) value of a property for the specified variable
+get(key, prop)
+
+/* Arguments
+ * key - Name of the variable/css class.
+ * prop - (optional) Name of the css property. Can be hyphenated or camel cased.
+ */
+
+
+// Converts camel cased strings to hypenated strings
+hyphenate(str)
+
+/* Arguments
+ * str - The string to be converted.
+ */
+```
+
 ## Example Usage
 ```html
 <!DOCTYPE html>
