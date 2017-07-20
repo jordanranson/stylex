@@ -19,10 +19,10 @@ stylex.set('button', {
 })
   
 setInterval(() => {
-	const color = colors[curColor]
-	curColor = (curColor+1) % colors.length
+  const color = colors[curColor]
+  curColor = (curColor+1) % colors.length
   stylex.set('button', 'backgroundColor', color, () => {
-  	//console.log(color)
+    console.log(color)
   })
 }, 1000)
 ```
