@@ -26,3 +26,15 @@ setInterval(() => {
   })
 }, 1000)
 ```
+
+```html
+<style>
+.my-button {
+  padding: 10px 16px;
+  border-radius: 3px;
+  display: inline-block;
+}
+</style>
+
+<div class="my-button var--button">My Button</div>
+```
