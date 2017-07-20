@@ -18,7 +18,7 @@ Reactive CSS library. Globally configure "virtual CSS variables" and update styl
   }
   </style>
 
-  <script src="https://unpkg.com/stylex-lib@1.0.0"></script>
+  <script src="https://unpkg.com/stylex-lib@1.0.1"></script>
   <script>
   const stylex = new Stylex()
 

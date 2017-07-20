@@ -1,7 +1,7 @@
-let ruleIndex = 0
-
 class Stylex {
   constructor () {
+    this.ruleIndex = 0
+
     const styleTag = document.createElement('style')
 
     styleTag.appendChild(document.createTextNode(''))
@@ -25,7 +25,7 @@ class Stylex {
     let rule = rules[key]
     if (!rule) {
       newRule = true
-      rule = { index: ruleIndex++ }
+      rule = { index: this.ruleIndex++ }
     }
 
     // Assign properties and values to the rule
@@ -70,7 +70,7 @@ class Stylex {
 
     prop = hyphenate(prop)
 
-    return prop 
+    return prop
       ? (rule[prop] || null)
       : rule
   }
@@ -80,4 +80,6 @@ class Stylex {
   }
 }
 
-module.exports = Stylex
+if (module) {
+  module.exports = Stylex
+}
