@@ -6,7 +6,7 @@ Reactive CSS library. Globally configure "virtual CSS variables" and update styl
  * Example usage
  */
  
-import stylex from 'stylex'
+import Stylex from 'stylex'
 
 const stylex = new Stylex()
 
