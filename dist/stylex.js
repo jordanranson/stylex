@@ -1,5 +1,9 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -11,84 +15,109 @@ var Stylex = function () {
     _classCallCheck(this, Stylex);
 
     this.ruleIndex = 0;
-
-    var styleTag = document.createElement('style');
-
-    styleTag.appendChild(document.createTextNode(''));
-    styleTag.setAttribute('rel', 'stylesheet');
-    styleTag.setAttribute('type', 'text/css');
-    styleTag.setAttribute('id', 'styleVars');
-
-    document.head.appendChild(styleTag);
-
-    this.el = styleTag;
-    this.sheet = styleTag.sheet;
-
     this.rules = {};
+
+    var isClient = typeof window !== 'undefined';
+    this.isClient = isClient;
+
+    if (isClient) {
+      var styleTag = document.getElementById('styleVars');
+
+      if (styleTag === null) {
+        styleTag = document.createElement('style');
+
+        styleTag.appendChild(document.createTextNode(''));
+        styleTag.setAttribute('rel', 'stylesheet');
+        styleTag.setAttribute('type', 'text/css');
+        styleTag.setAttribute('id', 'styleVars');
+
+        document.head.appendChild(styleTag);
+      }
+
+      this.el = styleTag;
+      this.sheet = styleTag.sheet;
+    }
   }
 
   _createClass(Stylex, [{
     key: 'set',
-    value: function set(key, prop, value, done) {
-      var rules = this.rules,
-          sheet = this.sheet,
-          hyphenate = this.hyphenate;
+    value: function set(varname, props, value, important) {
+      var hyphenate = this.hyphenate;
 
-      // Get or create rule
 
-      var newRule = false;
-      var rule = rules[key];
-      if (!rule) {
-        newRule = true;
-        rule = { index: this.ruleIndex++ };
-      }
+      var newRules = {};
 
-      // Assign properties and values to the rule
-      if ((typeof prop === 'undefined' ? 'undefined' : _typeof(prop)) === 'object') {
-        for (var p in prop) {
-          rule[hyphenate(p)] = prop[p];
+      if ((typeof props === 'undefined' ? 'undefined' : _typeof(props)) === 'object') {
+        for (var key in props) {
+          if (_typeof(props[key]) === 'object') {
+            if (typeof props[key].value === 'undefined') {
+              // This is a nested child
+              if (typeof newRules[varname + key] === 'undefined') {
+                newRules[varname + key] = {};
+              }
+              for (var j in props[key]) {
+                if (_typeof(props[key][j]) === 'object') {
+                  // This is a style schema
+                  var _value = props[key][j].value + (props[key][j].important ? ' !important' : '');
+                  newRules[varname + key][hyphenate(j)] = _value;
+                } else {
+                  // This is a k/v pair
+                  newRules[varname + key][hyphenate(j)] = props[key][j];
+                }
+              }
+            } else {
+              // This is a style schema
+              if (typeof newRules[varname] === 'undefined') {
+                newRules[varname] = {};
+              }
+              var _value2 = props[key].value + (props[key].important ? ' !important' : '');
+              newRules[varname][hyphenate(key)] = _value2;
+            }
+          } else {
+            // This is a k/v pair
+            if (typeof newRules[varname] === 'undefined') {
+              newRules[varname] = {};
+            }
+            newRules[varname][hyphenate(key)] = props[key];
+          }
         }
-        done = value;
       } else {
-        prop = hyphenate(prop);
-        rule[prop] = value;
+        newRules[varname] = {};
+        newRules[varname][hyphenate(props)] = value + (important ? ' !important' : '');
       }
 
-      // Update the cached rule
-      rules[key] = rule;
-
-      // Build an array of css strings for the sheet api
-      var styles = [];
-      for (var _p in rule) {
-        var v = rule[_p];
-        styles.push(_p + ':' + v);
+      for (var _key in newRules) {
+        this._setRule(_key, newRules[_key]);
       }
 
-      // Delete to avoid conflicting styles
-      if (!newRule) {
-        sheet.deleteRule(rule.index);
-      }
-      sheet.insertRule('.var--' + key + ' { ' + styles.join(';') + ' }', rule.index);
-
-      if (done) {
-        done(key, rule);
-      }
+      return {
+        then: function then(cb) {
+          setTimeout(cb, 0);
+        }
+      };
     }
   }, {
-    key: 'get',
-    value: function get(key, prop) {
+    key: '_setRule',
+    value: function _setRule(key, props) {
       var rules = this.rules,
-          hyphenate = this.hyphenate;
+          sheet = this.sheet,
+          isClient = this.isClient;
 
 
-      var rule = rules[key];
-      if (!rule) {
-        return null;
+      if (typeof rules[key] === 'undefined') {
+        rules[key] = { index: this.ruleIndex++, props: {} };
+      } else {
+        if (isClient) sheet.deleteRule(rules[key].index);
       }
 
-      prop = hyphenate(prop);
+      var styles = [];
+      for (var k in props) {
+        var v = props[k];
+        styles.push(k + ':' + v);
+      }
 
-      return prop ? rule[prop] || null : rule;
+      rules[key].props = props;
+      if (isClient) sheet.insertRule('.var--' + key + ' { ' + styles.join(';') + ' }', rules[key].index);
     }
   }, {
     key: 'hyphenate',
@@ -100,6 +129,4 @@ var Stylex = function () {
   return Stylex;
 }();
 
-if (typeof module !== 'undefined') {
-  module.exports = Stylex;
-}
+exports.default = Stylex;
