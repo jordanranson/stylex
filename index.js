@@ -104,8 +104,4 @@ class Stylex {
   }
 }
 
-if (typeof exports !== 'undefined') {
-  exports.default = Stylex
-} else {
-  window.Stylex = Stylex
-}
+export default Stylex
