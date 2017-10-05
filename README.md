@@ -71,7 +71,7 @@ hyphenate(str)
   }
   </style>
 
-  <script src="https://unpkg.com/stylex-lib@1.2.1"></script>
+  <script src="https://unpkg.com/stylex-lib@1.2.2"></script>
   <script>
   const stylex = new Stylex()
 
