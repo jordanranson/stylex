@@ -1,78 +1,102 @@
 class Stylex {
   constructor () {
     this.ruleIndex = 0
-
-    const styleTag = document.createElement('style')
-
-    styleTag.appendChild(document.createTextNode(''))
-    styleTag.setAttribute('rel', 'stylesheet')
-    styleTag.setAttribute('type', 'text/css')
-    styleTag.setAttribute('id', 'styleVars')
-
-    document.head.appendChild(styleTag)
-
-    this.el = styleTag
-    this.sheet = styleTag.sheet
-
     this.rules = {}
-  }
 
-  set (key, prop, value, done) {
-    const { rules, sheet, hyphenate } = this
+    const isClient = typeof window !== 'undefined'
+    this.isClient = isClient
 
-    // Get or create rule
-    let newRule = false
-    let rule = rules[key]
-    if (!rule) {
-      newRule = true
-      rule = { index: this.ruleIndex++ }
-    }
+    if (isClient) {
+      let styleTag = document.getElementById('styleVars')
 
-    // Assign properties and values to the rule
-    if (typeof prop === 'object') {
-      for (let p in prop) {
-        rule[hyphenate(p)] = prop[p]
+      if (styleTag === null) {
+        styleTag = document.createElement('style')
+
+        styleTag.appendChild(document.createTextNode(''))
+        styleTag.setAttribute('rel', 'stylesheet')
+        styleTag.setAttribute('type', 'text/css')
+        styleTag.setAttribute('id', 'styleVars')
+
+        document.head.appendChild(styleTag)
       }
-      done = value
-    } else {
-      prop = hyphenate(prop)
-      rule[prop] = value
-    }
 
-    // Update the cached rule
-    rules[key] = rule
-
-    // Build an array of css strings for the sheet api
-    const styles = []
-    for (let p in rule) {
-      const v = rule[p]
-      styles.push(`${p}:${v}`)
-    }
-
-    // Delete to avoid conflicting styles
-    if (!newRule) {
-      sheet.deleteRule(rule.index)
-    }
-    sheet.insertRule(`.var--${key} { ${styles.join(';')} }`, rule.index)
-
-    if (done) {
-      done(key, rule)
+      this.el = styleTag
+      this.sheet = styleTag.sheet
     }
   }
 
-  get (key, prop) {
-    const { rules, hyphenate } = this
+  set (varname, props, value, important) {
+    const { hyphenate } = this
 
-    const rule = rules[key]
-    if (!rule) {
-      return null
+    const newRules = {}
+
+    if (typeof props === 'object') {
+      for (let key in props) {
+        if (typeof props[key] === 'object') {
+          if (typeof props[key].value === 'undefined') {
+            // This is a nested child
+            if (typeof newRules[varname + key] === 'undefined') {
+              newRules[varname + key] = {}
+            }
+            for (let j in props[key]) {
+              if (typeof props[key][j] === 'object') {
+                // This is a style schema
+                const value = props[key][j].value + (props[key][j].important ? ' !important' : '')
+                newRules[varname + key][hyphenate(j)] = value
+              } else {
+                // This is a k/v pair
+                newRules[varname + key][hyphenate(j)] = props[key][j]
+              }
+            }
+          } else {
+            // This is a style schema
+            if (typeof newRules[varname] === 'undefined') {
+              newRules[varname] = {}
+            }
+            const value = props[key].value + (props[key].important ? ' !important' : '')
+            newRules[varname][hyphenate(key)] = value
+          }
+        } else {
+          // This is a k/v pair
+          if (typeof newRules[varname] === 'undefined') {
+            newRules[varname] = {}
+          }
+          newRules[varname][hyphenate(key)] = props[key]
+        }
+      }
+    } else {
+      newRules[varname] = {}
+      newRules[varname][hyphenate(props)] = value + (important ? ' !important' : '')
     }
 
-    prop = hyphenate(prop)
+    for (let key in newRules) {
+      this._setRule(key, newRules[key])
+    }
 
-    return prop
-      ? (rule[prop] || null)
-      : rule
+    return {
+      then (cb) {
+        setTimeout(cb, 0)
+      }
+    }
+  }
+
+  _setRule (key, props) {
+    const { rules, sheet, isClient } = this
+
+    if (typeof rules[key] === 'undefined') {
+      rules[key] = { index: this.ruleIndex++, props: {} }
+    } else {
+      if (isClient) sheet.deleteRule(rules[key].index)
+    }
+
+    const styles = []
+    for (let k in props) {
+      const v = props[k]
+      styles.push(`${k}:${v}`)
+    }
+
+    rules[key].props = props
+    if (isClient) sheet.insertRule(`.var--${key} { ${styles.join(';')} }`, rules[key].index)
   }
 
   hyphenate (str) {
@@ -80,6 +104,4 @@ class Stylex {
   }
 }
 
-if (typeof module !== 'undefined') {
-  module.exports = Stylex
-}
+export default Stylex
