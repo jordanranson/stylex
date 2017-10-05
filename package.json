@@ -1,6 +1,6 @@
 {
   "name": "stylex-lib",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Reactive CSS library. Globally configure \"virtual CSS variables\" and update styles in real time.",
   "main": "dist/stylex.js",
   "scripts": {
