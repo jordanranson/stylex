@@ -71,7 +71,7 @@ hyphenate(str)
   }
   </style>
 
-  <script src="https://unpkg.com/stylex-lib@1.2.2/dist/stylex.js"></script>
+  <script src="https://rawgit.com/jordanranson/stylex/master/dist/stylex-browser.js"></script>
   <script>
   const stylex = new Stylex()
 
@@ -86,8 +86,9 @@ hyphenate(str)
   setInterval(() => {
     const color = colors[curColor]
     curColor = (curColor+1) % colors.length
-    stylex.set('button', 'backgroundColor', color, () => {
-      console.log(color)
+    stylex.set('button', {
+      color: 'white',
+      backgroundColor: color
     })
   }, 1000)
   </script>
