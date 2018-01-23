@@ -143,7 +143,7 @@ var Stylex = function () {
     key: 'hyphenate',
     value: function hyphenate(str) {
       return str.split(/(?=[A-Z])/).join('-').toLowerCase();
-    }
+    } 
   }]);
 
   return Stylex;
